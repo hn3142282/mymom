@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chúc Mẹ 20/10</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#ff6b6b;
+      --muted:#cbd5e1;
+    }
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+    body{
+      background: radial-gradient(1200px 600px at 10% 10%, #14213d 0%, transparent 20%),
+                  radial-gradient(1000px 500px at 90% 90%, #2a2b4a 0%, transparent 18%),
+                  var(--bg);
+      display:flex;align-items:center;justify-content:center;color:var(--muted);
+    }
+    .card{
+      width:min(920px,96vw);
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:18px;padding:28px;box-shadow:0 10px 40px rgba(2,6,23,0.7);
+      display:grid;grid-template-columns:1fr;gap:20px;align-items:center;
+      position:relative;overflow:hidden;
+      text-align:center;
+    }
+    h1{margin:0;font-size:34px;color:var(--accent);letter-spacing:-0.5px;}
+    p.lead{font-size:18px;line-height:1.5;margin-top:12px;color:#e6eef8;}
+    .btn{
+      display:inline-block;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#ff8a80);
+      color:white;text-decoration:none;font-weight:600;margin-top:16px;box-shadow:0 6px 18px rgba(255,107,107,0.18);
+      cursor:pointer;
+    }
+    footer{position:absolute;left:24px;bottom:18px;font-size:13px;color:#9fb0cc;}
+    /* confetti canvas */
+    canvas#confetti{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;}
+    /* responsive */
+    @media (max-width:820px){
+      .card{padding:20px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <canvas id="confetti"></canvas>
+    <h1>Chúc Mẹ 20/10</h1>
+    <p class="lead" id="message">
+      Mẹ ơi, cảm ơn mẹ vì tất cả. Chúc mẹ luôn mạnh khỏe, xinh đẹp và hạnh phúc mỗi ngày. Con yêu mẹ rất nhiều! ❤️
+    </p>
+    <div>
+      <a class="btn" id="playBtn">Phát nhạc & Hiện quà</a>
+    </div>
+    <div style="margin-top:10px;font-size:14px;color:#cde6ff;">
+      <strong id="fromLine">Từ: [Tên bạn]</strong><br>
+      <span style="font-size:12px;color:#9fb0cc;">Ngày: 20/10</span>
+    </div>
+    <footer>Chúc Mẹ Ngày 20/10 — Tạo bằng ❤️</footer>
+  </div>
+
+  <audio id="bgMusic" src="YOUR_MUSIC.mp3" preload="auto"></audio>
+
+  <script>
+    // Confetti
+    (function(){
+      const canvas = document.getElementById('confetti');
+      const ctx = canvas.getContext('2d');
+      const card = document.getElementById('card');
+      function fit() { canvas.width = card.clientWidth; canvas.height = card.clientHeight; }
+      fit(); window.addEventListener('resize', fit);
+      const pieces = [];
+      function spawn(x,y){
+        for(let i=0;i<60;i++){
+          pieces.push({
+            x: x + (Math.random()-0.5)*200,
+            y: y + (Math.random()-0.5)*50,
+            vx: (Math.random()-0.5)*6,
+            vy: Math.random()*6+2,
+            r: Math.random()*6+3,
+            color: ['#ff6b6b','#ffd166','#4dffb4','#9be7ff','#c996ff'][Math.floor(Math.random()*5)],
+            rot: Math.random()*360, vr: (Math.random()-0.5)*10
+          });
+        }
+      }
+      function update(){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        for(let i=pieces.length-1;i>=0;i--){
+          const p=pieces[i];
+          p.x+=p.vx; p.y+=p.vy; p.vy+=0.15; p.rot+=p.vr;
+          ctx.save();
+          ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+          ctx.fillStyle=p.color;
+          ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r*1.8);
+          ctx.restore();
+          if(p.y>canvas.height+20) pieces.splice(i,1);
+        }
+        requestAnimationFrame(update);
+      }
+      update();
+
+      // Play button
+      const playBtn = document.getElementById('playBtn');
+      const audio = document.getElementById('bgMusic');
+      playBtn.addEventListener('click', () => {
+        audio.play().catch(()=>{ alert('Trình duyệt chặn autoplay. Nhấn play trên trang để bật nhạc.'); });
+        const rect = card.getBoundingClientRect();
+        spawn(rect.width*0.5, rect.height*0.3);
+      });
+    })();
+
+    // Optional: thay nội dung bằng URL params
+    (function(){
+      const url = new URL(location.href);
+      const msg = url.searchParams.get('msg');
+      const name = url.searchParams.get('from');
+      const music = url.searchParams.get('music');
+      if(msg) document.getElementById('message').textContent = msg;
+      if(name) document.getElementById('fromLine').textContent = 'Từ:con trai yêu quý của mịe' + name;
+      if(music) document.getElementById('bgMusic').src = music;
+    })();
+  </script>
+</body>
+</html>
